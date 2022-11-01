@@ -29,7 +29,6 @@ router.post("/addScore", validateToken, async (req, res) => {
           { highScore: req.body.score },
           { new: true }
         );
-        console.log("currentUserHighScore", currentUserHighScore);
       }
     } else {
       const postHighScore = new BoardSchema({
