@@ -1,5 +1,6 @@
-import UserSchema from "./UserSchema.js";
 import express from "express";
+import { decodeToken, validateToken } from "../lib/extra/helper.js";
+import UserSchema from "./UserSchema.js";
 
 import {
   generateToken,
@@ -37,15 +38,28 @@ router.post("/login", async (req, res) => {
       return res.status(400).json("Invalid userName");
     }
 
-    const validPass = validPassword(req.body.password, validData);
+    const validPass = await validPassword(req.body.password, validData);
 
     if (validPass) {
       const userToken = await generateToken(validData);
 
       res.header(process.env.TOKEN_KEY, userToken).json(userToken);
     } else {
-      res.status(400).json("Invalid password");
+      return res.status(400).json("Invalid password");
     }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+router.get("/detail", validateToken, async (req, res) => {
+  try {
+    const uid = decodeToken(req.headers.quiz)?._id;
+    const user = await UserSchema.findOne({ _id: uid })
+      .select("-password")
+      .exec();
+
+    res.status(200).json(user);
   } catch (err) {
     res.status(500).json(err);
   }
