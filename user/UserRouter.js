@@ -1,12 +1,13 @@
 import express from "express";
-import { decodeToken, validateToken } from "../lib/extra/helper.js";
-import UserSchema from "./UserSchema.js";
-
+import BoardSchema from "../board/BoardSchema.js";
 import {
+  decodeToken,
   generateToken,
   hashPassword,
+  validateToken,
   validPassword,
 } from "../lib/extra/helper.js";
+import UserSchema from "./UserSchema.js";
 
 const router = express.Router();
 
@@ -17,7 +18,6 @@ router.post("/register", async (req, res) => {
       return res.status(400).json("UserName already exists");
     }
     const hashPwd = await hashPassword(req.body.password);
-    console.log(hashPwd);
     const postData = await new UserSchema({
       userName: req.body.userName,
       password: hashPwd,
@@ -59,7 +59,9 @@ router.get("/detail", validateToken, async (req, res) => {
       .select("-password")
       .exec();
 
-    res.status(200).json(user);
+    const board = await BoardSchema.findOne({ uid }).exec();
+
+    res.status(200).json({ user, board });
   } catch (err) {
     res.status(500).json(err);
   }
