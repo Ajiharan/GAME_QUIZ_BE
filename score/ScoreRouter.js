@@ -1,8 +1,8 @@
-import ScoreSchema from "./ScoreSchema.js";
-import BoardSchema from "../board/BoardSchema.js";
-import UserSchema from "../user/UserSchema.js";
 import express from "express";
+import BoardSchema from "../board/BoardSchema.js";
 import { validateToken } from "../lib/extra/helper.js";
+import UserSchema from "../user/UserSchema.js";
+import ScoreSchema from "./ScoreSchema.js";
 
 const router = express.Router();
 
@@ -52,9 +52,13 @@ router.post("/addScore", validateToken, async (req, res) => {
   }
 });
 
-router.get("/getScores", validateToken, async (req, res) => {
+router.get("/getScores/:id", validateToken, async (req, res) => {
   try {
-    const scores = await ScoreSchema.find().limit(10);
+    // console.log("param", req.params);
+    const scores = await ScoreSchema.find({ uid: req.params.id })
+      .limit(5)
+      .sort("-score")
+      .exec();
     if (scores) {
       res.status(200).json(scores);
     }
