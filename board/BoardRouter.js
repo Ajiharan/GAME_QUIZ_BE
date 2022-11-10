@@ -15,4 +15,15 @@ router.get("/getScores", validateToken, async (req, res) => {
   }
 });
 
+router.get("/scores", async (req, res) => {
+  try {
+    const scores = await BoardSchema.find().limit(5).sort("-highScore").exec();
+    if (scores) {
+      res.status(200).json(scores);
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 export default router;
