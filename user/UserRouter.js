@@ -22,6 +22,7 @@ router.post("/register", async (req, res) => {
       userName: req.body.userName,
       password: hashPwd,
     });
+    console.log("postData", postData);
     const postUser = await postData.save();
     if (postUser) {
       return res.status(200).json("Registered successfully");

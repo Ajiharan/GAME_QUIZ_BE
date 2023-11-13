@@ -18,6 +18,7 @@ app.use("/score", ScoreRouter);
 app.use("/board", BoardRouter);
 
 const PORT = 5000 || process.env.PORT;
+mongoose.set("strictQuery", false);
 
 mongoose.connect(process.env.DB_CONNECTION, (err) => {
   if (err) {
